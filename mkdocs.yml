@@ -1,0 +1,17 @@
+site_name: TorchMorphic':' A PyTorch to DisCoPy Transpiler
+site_description: Translating PyTorch computational graphs to free symmetric monoidal categories.
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+nav:
+  - Home: index.md
