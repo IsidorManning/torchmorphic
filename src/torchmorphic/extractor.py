@@ -6,10 +6,11 @@ import torch.fx as fx
 @dataclass
 class MorphicNode:
     """A framework-agnostic representation of a computational step."""
-    name: str           # Unique identifier (e.g., 'x', 'linear_1')
-    op_class: str       # The category of operation: 'sample', 'init', or 'transform'
-    target: str         # The specific operation name (e.g., 'attention', 'relu')
-    inputs: list[str]   # Names of the nodes feeding into this one
+
+    name: str  # Unique identifier (e.g., 'x', 'linear_1')
+    op_class: str  # The category of operation: 'sample', 'init', or 'transform'
+    target: str  # The specific operation name (e.g., 'attention', 'relu')
+    inputs: list[str]  # Names of the nodes feeding into this one
 
 
 def extract_pytorch_graph(graph: fx.Graph) -> list[MorphicNode]:
@@ -19,18 +20,14 @@ def extract_pytorch_graph(graph: fx.Graph) -> list[MorphicNode]:
         inputs = [n.name for n in node.all_input_nodes]
 
         if node.op == "placeholder":
-            generic_nodes.append(
-                MorphicNode(node.name, "sample", "input", inputs)
-            )
+            generic_nodes.append(MorphicNode(node.name, "sample", "input", inputs))
 
         elif node.op == "get_attr":
-            generic_nodes.append(
-                MorphicNode(node.name, "init", "weight", inputs)
-            )
+            generic_nodes.append(MorphicNode(node.name, "init", "weight", inputs))
 
         elif node.op in ["call_module", "call_method"]:
             # node.target holds the name of the operation (e.g., 'attention')
-            target_name = str(node.target).split('.')[-1]
+            target_name = str(node.target).split(".")[-1]
             generic_nodes.append(
                 MorphicNode(node.name, "transform", target_name, inputs)
             )

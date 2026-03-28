@@ -36,3 +36,7 @@ ignore = []
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = "src"
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
