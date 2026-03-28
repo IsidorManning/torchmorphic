@@ -1,5 +1,5 @@
 import torch.nn as nn
-# from torchmorphic import X
+from torchmorphic.compiler import create_string_diagram
 
 class SimpleMHA(nn.Module):
     def __init__(self):
