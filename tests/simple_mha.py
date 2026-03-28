@@ -1,4 +1,5 @@
 import torch.nn as nn
+
 from torchmorphic.compiler import to_diagram
 
 
@@ -11,6 +12,7 @@ class SimpleMHA(nn.Module):
         # PyTorch MHA returns a tuple (attn_output, attn_output_weights).
         # We index [0] to keep the graph simple for the MVP.
         return self.attention(query, key, value)[0]
+
 
 if __name__ == "__main__":
     model = SimpleMHA()
