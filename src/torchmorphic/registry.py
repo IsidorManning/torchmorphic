@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
-from discopy.monoidal import Box, Ty
+from discopy.symmetric import Box, Ty
 
 # --- Object Types (T) ---
 C = Ty("C")  # Context / Abstract Source
@@ -25,6 +25,13 @@ def register_translation(target_name: str):
 # --- Generators (G) ---
 
 
+@register_translation("init")
+class InitParam(Box):
+    def __init__(self, name: str):
+        # Lifts context C into a Parameter P
+        super().__init__(name, dom=C, cod=P)
+
+
 @register_translation("placeholder")
 class Sample(Box):
     """Lifts abstract context into a tensor."""
@@ -41,6 +48,9 @@ class Linear(Box):
         # This box only cares about the CATEGORICAL signature.
         # It doesn't know if the data came from Torch or JAX.
         super().__init__(name, dom=T @ P, cod=T)  # type: ignore
+
+
+TRANSLATION_REGISTRY["shared_layer"] = Linear
 
 
 @register_translation("attention")
@@ -60,6 +70,22 @@ class Projection(Box):
         # We simplify for the MVP: assume it takes a product and returns one wire
         # In a strict version, you'd calculate which wire based on the index
         super().__init__(f"proj_{name}", dom=T @ T, cod=T)
+
+
+@register_translation("copy")
+class Copy(Box):
+    """Generalized Fan-out: Duplicates a tensor path k times."""
+
+    def __init__(self, fan_out: int):
+        super().__init__(f"copy_{fan_out}", dom=T, cod=T**fan_out)
+
+
+@register_translation("add")
+class Add(Box):
+    """Merges two tensor paths via addition (Fan-in)."""
+
+    def __init__(self, name="add"):
+        super().__init__(name, dom=T @ T, cod=T)
 
 
 # --- Execution ---
