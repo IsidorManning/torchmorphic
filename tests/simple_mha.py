@@ -1,5 +1,6 @@
 import torch.nn as nn
-from torchmorphic.compiler import create_string_diagram
+from torchmorphic.compiler import to_diagram
+
 
 class SimpleMHA(nn.Module):
     def __init__(self):
@@ -13,12 +14,12 @@ class SimpleMHA(nn.Module):
 
 if __name__ == "__main__":
     model = SimpleMHA()
-    
-    diagram = create_string_diagram(model)
-    
+
+    diagram = to_diagram(model)
+
     # Output properties for verification
     print(f"Domain (Inputs): {diagram.dom}")
     print(f"Codomain (Outputs): {diagram.cod}")
-    
+
     # Draws the string diagram
     diagram.draw(figsize=(6, 6), path="./mha_diagram.png")
